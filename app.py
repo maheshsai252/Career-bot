@@ -2,6 +2,7 @@ import streamlit as st
 from dotenv import load_dotenv
 import google.generativeai as genai
 import os
+
 load_dotenv()  # Load environment variables from .env file
 
 secret_key = os.getenv("SECRET_KEY")
@@ -25,11 +26,16 @@ if 'user_profile' not in st.session_state:
         'preferred_industries': ''
     }
 
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
+
 # Define the sidebar navigation
 st.sidebar.title("Career Guidance Chat")
 page = st.sidebar.radio("Go to", ["User Profile", "Chat"])
+
 if 'query' not in st.session_state:
     st.session_state.query = ""
+
 # User Profile Page
 if page == "User Profile":
     st.title("User Profile")
@@ -82,18 +88,29 @@ elif page == "Chat":
                            f"Education: {user_profile['education']}, Skills: {user_profile['skills']}, "
                            f"Interests: {user_profile['interests']}, Preferred Industries: {user_profile['preferred_industries']}")
             
-            full_prompt = f"**Imagine yourself as career consultant, Review profile of job-seeeker:**\n{user_profile}\n\n** .Help the user by providing answer to the following query {query.lower()}. Don't answer if above query is not related to career advice or job related, instead say 'It's not related to my expertise' **\n\nResponse:"
+            full_prompt = f"**Imagine yourself as career consultant, Review profile of job-seeker:**\n{profile_str}\n\n** .Help the user by providing answer to the following query {query.lower()}. Don't answer if above query is not related to career advice or job related, instead say 'It's not related to my expertise' **\n\nResponse:"
 
             # Get response from Gemini
             response = get_gemini_response(full_prompt)
 
-            st.subheader("Your Query")
-            st.write( st.session_state.query)
+            # Append the query and response to chat history
+            st.session_state.chat_history.append((query, response))
 
-            st.subheader("Response")
-            st.write(response)
+    # Display chat history
+    if st.session_state.chat_history:
+        st.subheader("Chat")
+        for i, (q, r) in enumerate(reversed(st.session_state.chat_history)):
+            st.markdown(f"""
+                <div style="background-color: #E7D4B5;color: black; padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                    <strong><span style="font-size: 2.5rem">👨🏻‍💻 </span></strong><br/> {q}
+                </div>
+                <div style="background-color: #B6C7AA;color: black; padding: 20px; border-radius: 5px; margin-bottom: 10px;">
+                    <strong><span style="font-size: 2.5rem">🤖</span></strong><br/>  {r}
+            """, unsafe_allow_html=True)
+            st.markdown("---")
 
-
-# Add footer
-st.sidebar.markdown("---")
-st.sidebar.markdown("Developed by Mahesh")
+# For clearing the chat history
+if st.sidebar.button("Clear Chat History"):
+    st.session_state.chat_history = []
+    st.session_state.query = ""
+    st.experimental_rerun()
