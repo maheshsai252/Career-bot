@@ -2,6 +2,8 @@
 
 This is a Streamlit application that requires a secret key for proper functioning. Follow the instructions below to set up and run the application.
 
+ Video Demonstration - https://youtu.be/yTyHJUw472A
+ 
 ## Prerequisites
 
 Make sure you have the following installed:
