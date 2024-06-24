@@ -1,6 +1,6 @@
-# Streamlit Application
+# Career Guidance BOT
 
-This is a Streamlit application that requires a secret key for proper functioning. Follow the instructions below to set up and run the application.
+This is a Streamlit application that requires a API key from Google(available for free) for proper functioning. Follow the instructions below to set up and run the application.
 
  Video Demonstration - https://youtu.be/0GX4GHMyNNI
 
